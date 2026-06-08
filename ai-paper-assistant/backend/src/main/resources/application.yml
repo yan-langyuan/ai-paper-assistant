@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: ai-paper-assistant
+  datasource:
+    url: jdbc:h2:file:./data/aipaper;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 200MB
+
+server:
+  port: 8080
+
+app:
+  upload-dir: ./uploads/literature
+  jwt-secret: ai-paper-assistant-jwt-secret-key-2026
+  jwt-expiration: 604800000
+
+ai:
+  api:
+    url: https://api.openai.com/v1/chat/completions
+    key: ${AI_API_KEY:demo-key}
+    model: gpt-4o-mini

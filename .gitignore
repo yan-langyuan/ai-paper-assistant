@@ -1,0 +1,39 @@
+# ===== Node / 前端 =====
+node_modules/
+dist/
+.vite/
+
+# ===== Java / 后端 =====
+target/
+*.class
+*.jar
+*.war
+
+# ===== 数据库 =====
+data/
+*.db
+*.mv.db
+
+# ===== 上传文件 =====
+uploads/
+*.pdf
+
+# ===== IDE =====
+.idea/
+*.iml
+.vscode/settings.json
+
+# ===== 环境变量 =====
+.env
+.env.local
+.env.*.local
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# ===== 凭证 =====
+credentials.json
+.lobehub-market/

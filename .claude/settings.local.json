@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/c/Users/Administrator/AppData/Local/Microsoft/WindowsApps/python3.exe\" --version)",
+      "Bash(\"/c/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe\" --version)",
+      "Bash(\"/c/Program Files/Python314/python.exe\" --version)",
+      "Bash(\"/c/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe\" -c \"import pandas; import numpy; print\\('OK'\\)\")",
+      "Bash(\"/c/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe\" -m pip install pandas numpy -q)",
+      "Bash(\"/c/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe\" Dysj.py)",
+      "Bash(\"/c/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe\" analysis.py)",
+      "Bash(iconv -f gbk -t utf-8)",
+      "WebSearch",
+      "Bash(java -version)",
+      "Bash(mvn -version)",
+      "Bash(npm -v)",
+      "Bash(vue --version)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(npm run *)",
+      "Bash(git --version)",
+      "Bash(where git *)",
+      "Bash(npx -y @lobehub/market-cli skills install affaan-m-everything-claude-code-frontend-design --agent claude-code)"
+    ]
+  }
+}

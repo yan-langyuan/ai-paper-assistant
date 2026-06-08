@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== 基础层 ===== */
+@layer base {
+  body {
+    @apply bg-surface-paper text-ink-800 font-body antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  h1, h2, h3 {
+    @apply font-display tracking-tight;
+  }
+
+  a {
+    @apply text-amber transition-colors duration-200;
+  }
+  a:hover {
+    @apply text-amber-dark;
+  }
+}
+
+/* ===== 组件层 ===== */
+@layer components {
+  /* 主按钮 — 琥珀强调色 */
+  .btn-primary {
+    @apply bg-amber text-white px-5 py-2.5 rounded-lg font-medium
+           shadow-sm
+           hover:bg-amber-dark
+           disabled:opacity-40 disabled:cursor-not-allowed
+           transition-all duration-200;
+  }
+
+  /* 次要按钮 */
+  .btn-secondary {
+    @apply bg-surface-card text-ink-600 px-5 py-2.5 rounded-lg font-medium
+           border border-ink-200
+           hover:bg-ink-100 hover:text-ink-800
+           transition-all duration-200;
+  }
+
+  /* 危险按钮 */
+  .btn-danger {
+    @apply bg-risk-high text-white px-5 py-2.5 rounded-lg font-medium
+           hover:opacity-90
+           transition-all duration-200;
+  }
+
+  /* 幽灵按钮 */
+  .btn-ghost {
+    @apply text-ink-600 px-4 py-2 rounded-lg font-medium
+           hover:bg-ink-100 hover:text-ink-800
+           transition-all duration-200;
+  }
+
+  /* 卡片容器 */
+  .card {
+    @apply bg-white rounded-xl shadow-card border border-ink-100/50;
+  }
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300;
+  }
+
+  /* 输入框 */
+  .input-field {
+    @apply w-full px-4 py-3 bg-white border border-ink-200 rounded-lg
+           text-ink-800 placeholder:text-ink-300
+           focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber
+           transition-all duration-200;
+  }
+
+  /* AI 生成内容区域 */
+  .ai-block {
+    @apply bg-surface-card rounded-lg border-l-2 border-amber p-5;
+  }
+  .ai-disclaimer {
+    @apply text-xs text-ink-400 mt-3 italic;
+  }
+
+  /* 风险高亮 */
+  .highlight-red {
+    @apply bg-red-50 border-l-4 border-risk-high rounded-r-md;
+  }
+  .highlight-yellow {
+    @apply bg-amber-50 border-l-4 border-amber rounded-r-md;
+  }
+  .highlight-green {
+    @apply bg-emerald-50 border-l-4 border-risk-low rounded-r-md;
+  }
+
+  /* 骨架屏 */
+  .skeleton {
+    @apply bg-ink-100 animate-pulse rounded;
+  }
+
+  /* Toast */
+  .toast {
+    @apply fixed top-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-lg
+           shadow-modal text-sm font-medium z-50
+           transition-all duration-300;
+  }
+}
+
+/* ===== 工具层 ===== */
+@layer utilities {
+  /* 暖纸纹理背景 */
+  .bg-paper-texture {
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(194, 120, 47, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(194, 120, 47, 0.03) 0%, transparent 60%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ===== 动效 ===== */
+
+/* 页面进入 */
+.page-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* 抽屉滑入 */
+.slide-right-enter-active {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide-right-leave-active {
+  transition: transform 0.25s ease-in;
+}
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+/* 淡入 */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 列表交错进入 */
+.list-item-enter-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.list-item-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* 摘要卡片 */
+@keyframes card-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-reveal {
+  animation: card-reveal 0.5s ease both;
+}
+
+/* 骨架屏微动 */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #ede8de 25%, #f7f5f0 50%, #ede8de 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
