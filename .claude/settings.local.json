@@ -20,7 +20,13 @@
       "Bash(npm run *)",
       "Bash(git --version)",
       "Bash(where git *)",
-      "Bash(npx -y @lobehub/market-cli skills install affaan-m-everything-claude-code-frontend-design --agent claude-code)"
+      "Bash(npx -y @lobehub/market-cli skills install affaan-m-everything-claude-code-frontend-design --agent claude-code)",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/register -H 'Content-Type: application/json;charset=UTF-8' --data-raw '{\"username\":\"xiaolin\",\"password\":\"123456\",\"email\":\"xiaolin@qq.com\",\"grade\":\"大三\",\"major\":\"计算机\"}')",
+      "Bash(\"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql\" -u root -psal68726872 ai-paper-assistant -e \"SELECT id, username, email, grade, major, created_at FROM \\\\`user\\\\`;\")",
+      "Bash(printf '{\"username\":\"xiaolin\",\"password\":\"123456\",\"email\":\"x@q.com\",\"grade\":\"junior\",\"major\":\"cs\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/register -H \"Content-Type: application/json\" -d @/tmp/test.json)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/api/auth/register)"
     ]
   }
 }
