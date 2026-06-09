@@ -3,8 +3,8 @@ package com.aipaper.service.impl;
 import com.aipaper.dto.AuthResponse;
 import com.aipaper.dto.LoginRequest;
 import com.aipaper.dto.RegisterRequest;
+import com.aipaper.mapper.UserMapper;
 import com.aipaper.model.User;
-import com.aipaper.repository.UserRepository;
 import com.aipaper.service.UserService;
 import com.aipaper.util.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public UserServiceImpl(UserRepository userRepository,
+    public UserServiceImpl(UserMapper userMapper,
                            PasswordEncoder passwordEncoder,
                            JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
+        this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse register(RegisterRequest req) {
         // 检查用户名是否已存在
-        if (userRepository.findByUsername(req.getUsername()).isPresent()) {
+        if (userMapper.findByUsername(req.getUsername()) != null) {
             throw new RuntimeException("用户名已存在");
         }
 
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
                 .major(req.getMajor())
                 .build();
 
-        user = userRepository.save(user);
+        userMapper.insert(user);
 
         // 生成JWT令牌
         String token = jwtUtil.generateToken(user.getUsername());
@@ -55,8 +55,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse login(LoginRequest req) {
         // 查找用户
-        User user = userRepository.findByUsername(req.getUsername())
-                .orElseThrow(() -> new RuntimeException("用户名或密码错误"));
+        User user = userMapper.findByUsername(req.getUsername());
+        if (user == null) {
+            throw new RuntimeException("用户名或密码错误");
+        }
 
         // 验证密码
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {

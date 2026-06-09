@@ -1,77 +1,63 @@
 package com.aipaper.model;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "literature")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TableName("literature")
 public class Literature {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @TableField("user_id")
     private Long userId;
 
-    @Column(nullable = false, length = 500)
+    @TableField("title")
     private String title;
 
-    @Column(length = 500)
+    @TableField("authors")
     private String authors;
 
-    @Column(length = 300)
+    @TableField("journal")
     private String journal;
 
-    @Column(length = 20)
+    @TableField("volume")
     private String volume;
 
-    @Column(length = 20)
+    @TableField("issue")
     private String issue;
 
-    @Column(length = 50)
+    @TableField("pages")
     private String pages;
 
-    @Column(name = "publication_year")
+    @TableField("publication_year")
     private Integer year;
 
-    @Column(length = 200)
+    @TableField("doi")
     private String doi;
 
-    @Column(name = "abstract_text", columnDefinition = "TEXT")
+    @TableField("abstract_text")
     private String abstractText;
 
-    @Column(name = "full_text", columnDefinition = "CLOB")
+    @TableField("full_text")
     private String fullText;
 
-    @Column(name = "ai_summary", columnDefinition = "TEXT")
+    @TableField("ai_summary")
     private String aiSummary;
 
-    @Column(length = 20)
-    @Builder.Default
-    private String status = "PENDING";
+    @TableField("status")
+    private String status;
 
-    @Column(name = "file_path", length = 500)
+    @TableField("file_path")
     private String filePath;
 
-    @Column(name = "created_at")
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

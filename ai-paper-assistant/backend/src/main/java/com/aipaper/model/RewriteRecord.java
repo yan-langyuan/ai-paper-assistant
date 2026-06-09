@@ -1,44 +1,36 @@
 package com.aipaper.model;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "rewrite_record")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TableName("rewrite_record")
 public class RewriteRecord {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @TableField("user_id")
     private Long userId;
 
-    @Column(name = "original_text", columnDefinition = "CLOB", nullable = false)
+    @TableField("original_text")
     private String originalText;
 
-    @Column(nullable = false)
+    @TableField("similarity")
     private Double similarity;
 
-    @Column(name = "rewritten_text", columnDefinition = "CLOB")
+    @TableField("rewritten_text")
     private String rewrittenText;
 
-    @Column(name = "scheme_type", length = 20)
+    @TableField("scheme_type")
     private String schemeType;
 
-    @Column(name = "new_similarity")
+    @TableField("new_similarity")
     private Double newSimilarity;
 
-    @Column(name = "created_at")
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }

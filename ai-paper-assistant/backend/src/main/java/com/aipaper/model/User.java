@@ -1,49 +1,36 @@
 package com.aipaper.model;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "`user`")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TableName("`user`")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @TableField("username")
     private String username;
 
-    @Column(nullable = false)
+    @TableField("password")
     private String password;
 
-    @Column(length = 100)
+    @TableField("email")
     private String email;
 
-    @Column(length = 20)
+    @TableField("grade")
     private String grade;
 
-    @Column(length = 50)
+    @TableField("major")
     private String major;
 
-    @Column(name = "created_at")
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

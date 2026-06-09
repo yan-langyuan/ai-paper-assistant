@@ -1,8 +1,8 @@
 package com.aipaper.service.impl;
 
 import com.aipaper.dto.LiteratureDTO;
+import com.aipaper.mapper.LiteratureMapper;
 import com.aipaper.model.Literature;
-import com.aipaper.repository.LiteratureRepository;
 import com.aipaper.service.AiService;
 import com.aipaper.service.LiteratureService;
 import org.apache.pdfbox.Loader;
@@ -26,16 +26,16 @@ import java.util.stream.Collectors;
 @Service
 public class LiteratureServiceImpl implements LiteratureService {
 
-    private final LiteratureRepository literatureRepository;
+    private final LiteratureMapper literatureMapper;
     private final AiService aiService;
     private final Path uploadDir;
 
-    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-    public LiteratureServiceImpl(LiteratureRepository literatureRepository,
+    public LiteratureServiceImpl(LiteratureMapper literatureMapper,
                                  AiService aiService,
                                  @Value("${app.upload-dir}") String uploadDirPath) {
-        this.literatureRepository = literatureRepository;
+        this.literatureMapper = literatureMapper;
         this.aiService = aiService;
         this.uploadDir = Paths.get(uploadDirPath).toAbsolutePath().normalize();
     }
@@ -84,12 +84,11 @@ public class LiteratureServiceImpl implements LiteratureService {
         String doi = extractDoi(extractedText);
         Integer year = extractYear(extractedText);
 
-        // 如果提取的标题为空，使用文件名作为标题
         if (title == null || title.isBlank()) {
             title = originalFilename != null ? originalFilename.replaceAll("\\.pdf$", "") : "未命名文献";
         }
 
-        // 创建文献实体
+        // 创建文献实体并保存
         Literature literature = Literature.builder()
                 .userId(userId)
                 .title(title)
@@ -101,7 +100,7 @@ public class LiteratureServiceImpl implements LiteratureService {
                 .status("PENDING")
                 .build();
 
-        literature = literatureRepository.save(literature);
+        literatureMapper.insert(literature);
 
         // 异步生成AI摘要
         final Long litId = literature.getId();
@@ -109,27 +108,27 @@ public class LiteratureServiceImpl implements LiteratureService {
         new Thread(() -> {
             try {
                 String summary = aiService.generateSummary(fullText);
-                Literature lit = literatureRepository.findById(litId).orElse(null);
+                Literature lit = literatureMapper.selectById(litId);
                 if (lit != null) {
                     lit.setAiSummary(summary);
                     lit.setStatus("COMPLETED");
-                    literatureRepository.save(lit);
+                    literatureMapper.updateById(lit);
                 }
             } catch (Exception e) {
-                Literature lit = literatureRepository.findById(litId).orElse(null);
+                Literature lit = literatureMapper.selectById(litId);
                 if (lit != null) {
                     lit.setStatus("FAILED");
-                    literatureRepository.save(lit);
+                    literatureMapper.updateById(lit);
                 }
             }
-        });
+        }).start();
 
         return toDTO(literature);
     }
 
     @Override
     public List<LiteratureDTO> listByUser(Long userId) {
-        return literatureRepository.findByUserIdOrderByCreatedAtDesc(userId)
+        return literatureMapper.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -137,8 +136,10 @@ public class LiteratureServiceImpl implements LiteratureService {
 
     @Override
     public LiteratureDTO getById(Long id, Long userId) {
-        Literature literature = literatureRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("文献不存在"));
+        Literature literature = literatureMapper.selectById(id);
+        if (literature == null) {
+            throw new RuntimeException("文献不存在");
+        }
 
         if (!literature.getUserId().equals(userId)) {
             throw new RuntimeException("无权访问该文献");
@@ -149,8 +150,10 @@ public class LiteratureServiceImpl implements LiteratureService {
 
     @Override
     public void delete(Long id, Long userId) {
-        Literature literature = literatureRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("文献不存在"));
+        Literature literature = literatureMapper.selectById(id);
+        if (literature == null) {
+            throw new RuntimeException("文献不存在");
+        }
 
         if (!literature.getUserId().equals(userId)) {
             throw new RuntimeException("无权删除该文献");
@@ -165,13 +168,15 @@ public class LiteratureServiceImpl implements LiteratureService {
             }
         }
 
-        literatureRepository.delete(literature);
+        literatureMapper.deleteById(id);
     }
 
     @Override
     public String generateSummary(Long litId, Long userId) throws Exception {
-        Literature literature = literatureRepository.findById(litId)
-                .orElseThrow(() -> new RuntimeException("文献不存在"));
+        Literature literature = literatureMapper.selectById(litId);
+        if (literature == null) {
+            throw new RuntimeException("文献不存在");
+        }
 
         if (!literature.getUserId().equals(userId)) {
             throw new RuntimeException("无权操作该文献");
@@ -184,7 +189,7 @@ public class LiteratureServiceImpl implements LiteratureService {
         String summary = aiService.generateSummary(literature.getFullText());
         literature.setAiSummary(summary);
         literature.setStatus("COMPLETED");
-        literatureRepository.save(literature);
+        literatureMapper.updateById(literature);
 
         return summary;
     }
@@ -211,9 +216,6 @@ public class LiteratureServiceImpl implements LiteratureService {
                 .build();
     }
 
-    /**
-     * 通用正则提取单行元数据
-     */
     private String extractMetadata(String text, String regex) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(text);
@@ -224,11 +226,7 @@ public class LiteratureServiceImpl implements LiteratureService {
         return null;
     }
 
-    /**
-     * 提取作者信息
-     */
     private String extractAuthors(String text) {
-        // 匹配常见的作者行： "作者：XXX" 或 "Author: XXX"
         Pattern pattern = Pattern.compile("(?i)(?:作者|Author|Authors)[：:]\\s*([^\\n]+)");
         Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {
@@ -238,9 +236,6 @@ public class LiteratureServiceImpl implements LiteratureService {
         return null;
     }
 
-    /**
-     * 提取DOI
-     */
     private String extractDoi(String text) {
         Pattern pattern = Pattern.compile("(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![\"&\\'<>\\s)\\]])\\S)+)");
         Matcher matcher = pattern.matcher(text);
@@ -250,9 +245,6 @@ public class LiteratureServiceImpl implements LiteratureService {
         return null;
     }
 
-    /**
-     * 提取年份
-     */
     private Integer extractYear(String text) {
         Pattern pattern = Pattern.compile("(?:19|20)\\d{2}");
         Matcher matcher = pattern.matcher(text);

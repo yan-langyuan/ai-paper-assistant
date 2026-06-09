@@ -2,25 +2,24 @@ spring:
   application:
     name: ai-paper-assistant
   datasource:
-    url: jdbc:h2:file:./data/aipaper;DB_CLOSE_DELAY=-1;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: sal68726872
+    url: jdbc:mysql://localhost:3306/ai-paper-assistant?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8mb4&allowPublicKeyRetrieval=true
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 200MB
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      table-prefix: ""
 
 server:
   port: 8080

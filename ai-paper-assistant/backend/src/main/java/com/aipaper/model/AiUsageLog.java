@@ -1,35 +1,27 @@
 package com.aipaper.model;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "ai_usage_log")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TableName("ai_usage_log")
 public class AiUsageLog {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @TableField("user_id")
     private Long userId;
 
-    @Column(name = "action_type", length = 20, nullable = false)
+    @TableField("action_type")
     private String actionType;
 
-    @Column(name = "char_count")
+    @TableField("char_count")
     private Integer charCount;
 
-    @Column(name = "created_at")
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }

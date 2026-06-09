@@ -4,8 +4,8 @@ import com.aipaper.dto.DetectRequest;
 import com.aipaper.dto.DetectResult;
 import com.aipaper.dto.RewriteRequest;
 import com.aipaper.dto.RewriteResult;
+import com.aipaper.mapper.UserMapper;
 import com.aipaper.model.User;
-import com.aipaper.repository.UserRepository;
 import com.aipaper.service.ParaphraseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +19,12 @@ import java.util.Map;
 public class ParaphraseController {
 
     private final ParaphraseService paraphraseService;
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public ParaphraseController(ParaphraseService paraphraseService,
-                                 UserRepository userRepository) {
+                                 UserMapper userMapper) {
         this.paraphraseService = paraphraseService;
-        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/detect")
@@ -55,13 +55,12 @@ public class ParaphraseController {
         }
     }
 
-    /**
-     * 从 SecurityContextHolder 获取当前认证用户名，并查询对应的 userId
-     */
     private Long getCurrentUserId() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("用户未登录"));
+        User user = userMapper.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("用户未登录");
+        }
         return user.getId();
     }
 }

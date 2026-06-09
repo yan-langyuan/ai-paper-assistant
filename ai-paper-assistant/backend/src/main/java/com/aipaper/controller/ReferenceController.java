@@ -2,8 +2,8 @@ package com.aipaper.controller;
 
 import com.aipaper.dto.ReferenceFormatRequest;
 import com.aipaper.dto.ReferenceFormatResult;
+import com.aipaper.mapper.UserMapper;
 import com.aipaper.model.User;
-import com.aipaper.repository.UserRepository;
 import com.aipaper.service.ReferenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class ReferenceController {
 
     private final ReferenceService referenceService;
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public ReferenceController(ReferenceService referenceService,
-                                UserRepository userRepository) {
+                                UserMapper userMapper) {
         this.referenceService = referenceService;
-        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/format")
@@ -51,13 +51,12 @@ public class ReferenceController {
         }
     }
 
-    /**
-     * 从 SecurityContextHolder 获取当前认证用户名，并查询对应的 userId
-     */
     private Long getCurrentUserId() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("用户未登录"));
+        User user = userMapper.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("用户未登录");
+        }
         return user.getId();
     }
 }

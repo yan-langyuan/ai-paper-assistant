@@ -1,8 +1,8 @@
 package com.aipaper.controller;
 
 import com.aipaper.dto.LiteratureDTO;
+import com.aipaper.mapper.UserMapper;
 import com.aipaper.model.User;
-import com.aipaper.repository.UserRepository;
 import com.aipaper.service.LiteratureService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class LiteratureController {
 
     private final LiteratureService literatureService;
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public LiteratureController(LiteratureService literatureService,
-                                 UserRepository userRepository) {
+                                 UserMapper userMapper) {
         this.literatureService = literatureService;
-        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/upload")
@@ -96,13 +96,12 @@ public class LiteratureController {
         }
     }
 
-    /**
-     * 从 SecurityContextHolder 获取当前认证用户名，并查询对应的 userId
-     */
     private Long getCurrentUserId() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("用户未登录"));
+        User user = userMapper.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("用户未登录");
+        }
         return user.getId();
     }
 }
