@@ -26,7 +26,9 @@
       "Bash(printf '{\"username\":\"xiaolin\",\"password\":\"123456\",\"email\":\"x@q.com\",\"grade\":\"junior\",\"major\":\"cs\"}')",
       "Bash(curl -s -X POST http://localhost:8080/api/auth/register -H \"Content-Type: application/json\" -d @/tmp/test.json)",
       "Bash(netstat -ano)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/api/auth/register)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/api/auth/register)",
+      "Bash(printf '{\"username\":\"fromfrontend\",\"password\":\"123456\",\"email\":\"ff@q.com\",\"grade\":\"大三\",\"major\":\"计算机\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/register -H \"Content-Type: application/json\" -H \"Origin: http://localhost:5173\" -d @/tmp/ff.json)"
     ]
   }
 }
