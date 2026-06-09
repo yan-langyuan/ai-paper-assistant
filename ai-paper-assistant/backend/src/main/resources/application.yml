@@ -31,6 +31,6 @@ app:
 
 ai:
   api:
-    url: https://api.deepseek.com
+    url: https://api.deepseek.com/v1/chat/completions
     key: sk-933103cb45594b27ab94b352f309f23e
     model: deepseek-chat
