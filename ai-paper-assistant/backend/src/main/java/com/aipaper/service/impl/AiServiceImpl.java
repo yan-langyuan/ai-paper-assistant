@@ -40,13 +40,15 @@ public class AiServiceImpl implements AiService {
 
     @Override
     public String generateSummary(String fullText) throws Exception {
-        String prompt = "你是一位学术论文分析专家。请分析以下论文全文，并以JSON格式返回结果（不要包含markdown代码块标记）。" +
+        String prompt = "你是一位学术论文分析专家。请分析以下论文全文，并以JSON格式返回结果（不要包含markdown代码块标记，只输出纯JSON）。" +
                 "JSON必须包含以下字段：\n" +
                 "1. background: 研究背景（100字以内）\n" +
-                "2. question: 研究问题/目标\n" +
-                "3. method: 研究方法\n" +
-                "4. findings: 主要发现\n" +
-                "5. limitations: 研究局限\n\n" +
+                "2. question: 研究问题/目标（一句话概括）\n" +
+                "3. method: 研究方法（简要说明）\n" +
+                "4. findings: 主要发现（字符串数组格式，每条发现独立成句，如 [\"发现1\", \"发现2\", \"发现3\"]）\n" +
+                "5. limitations: 研究局限（简要说明）\n\n" +
+                "示例JSON格式：\n" +
+                "{\"background\":\"...\",\"question\":\"...\",\"method\":\"...\",\"findings\":[\"发现一\",\"发现二\",\"发现三\"],\"limitations\":\"...\"}\n\n" +
                 "论文全文：\n" + fullText;
 
         String responseJson = callAiApi(prompt);
@@ -59,6 +61,15 @@ public class AiServiceImpl implements AiService {
         if (!root.has("background") || !root.has("question") || !root.has("method")
                 || !root.has("findings") || !root.has("limitations")) {
             throw new RuntimeException("AI返回的摘要格式不正确，缺少必要字段");
+        }
+
+        // 标准化 findings 字段：如果是字符串，转为单元素数组
+        if (root.get("findings").isTextual()) {
+            var obj = objectMapper.readValue(responseJson, com.fasterxml.jackson.databind.node.ObjectNode.class);
+            var arr = objectMapper.createArrayNode();
+            arr.add(root.get("findings").asText());
+            obj.set("findings", arr);
+            responseJson = objectMapper.writeValueAsString(obj);
         }
 
         return responseJson;

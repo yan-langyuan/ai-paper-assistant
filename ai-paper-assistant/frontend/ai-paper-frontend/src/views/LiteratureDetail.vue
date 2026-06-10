@@ -67,15 +67,53 @@ async function loadSummary() {
 
 function parseSummary(summaryText) {
   if (!summaryText) return []
-  // Try to parse as JSON sections array first
-  if (typeof summaryText === 'object' && summaryText.sections) {
-    return summaryText.sections
-  }
-  // Return as a single section if plain text
+
+  // 处理字符串类型：先尝试JSON解析，失败则当作纯文本
   if (typeof summaryText === 'string') {
+    try {
+      const parsed = JSON.parse(summaryText)
+      if (typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return mapJsonToSections(parsed)
+      }
+    } catch {
+      // 不是合法JSON，当作纯文本摘要
+    }
     return [{ key: 'content', label: '摘要内容', content: summaryText }]
   }
+
+  // 已经是对象（极少情况）
+  if (typeof summaryText === 'object' && !Array.isArray(summaryText)) {
+    return mapJsonToSections(summaryText)
+  }
+
   return []
+}
+
+/**
+ * 将AI返回的JSON字段映射为SummaryCard需要的sections格式
+ * JSON格式: { background, question, method, findings, limitations }
+ */
+function mapJsonToSections(json) {
+  const fieldMap = [
+    { key: 'background',  label: '研究背景' },
+    { key: 'question',    label: '研究问题' },
+    { key: 'method',      label: '研究方法' },
+    { key: 'findings',    label: '核心发现' },
+    { key: 'limitations', label: '研究局限' },
+  ]
+
+  const sections = []
+  for (const fm of fieldMap) {
+    const value = json[fm.key]
+    if (value) {
+      sections.push({
+        key: fm.key,
+        label: fm.label,
+        content: value
+      })
+    }
+  }
+  return sections.length > 0 ? sections : [{ key: 'content', label: '摘要内容', content: JSON.stringify(json) }]
 }
 
 function addToReference() {
