@@ -37,7 +37,9 @@ function showToast(message, type = 'info') {
 async function loadStandards() {
   try {
     const res = await getStandards()
-    standards.value = res.data || []
+    // 后端返回格式: { standards: [...] }，需取 .standards 字段
+    const list = res.data?.standards || ['GB/T 7714', 'APA 7th', 'MLA 9th']
+    standards.value = list
     if (standards.value.length > 0) {
       selectedStandard.value = standards.value[0]
     }
