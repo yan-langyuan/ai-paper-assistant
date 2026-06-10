@@ -33,6 +33,19 @@ const hasContent = computed(() =>
   props.sections.some((s) => s.content)
 )
 
+// Figma 设计五色方案
+const SECTION_COLORS = {
+  background:  { bg: 'bg-blue-50',   text: 'text-blue-600',  dot: 'bg-blue-500' },
+  question:    { bg: 'bg-purple-50', text: 'text-purple-600', dot: 'bg-purple-500' },
+  method:      { bg: 'bg-cyan-50',   text: 'text-cyan-600',  dot: 'bg-cyan-500' },
+  findings:    { bg: 'bg-green-50',  text: 'text-green-600', dot: 'bg-green-500' },
+  limitations: { bg: 'bg-amber-50',  text: 'text-amber-600', dot: 'bg-amber-500' },
+}
+
+function sectionColor(key) {
+  return SECTION_COLORS[key] || { bg: 'bg-ink-50', text: 'text-ink-600', dot: 'bg-ink-500' }
+}
+
 function handleCopy() {
   const text = mergedSections.value
     .filter((s) => s.content)
@@ -75,29 +88,25 @@ function handleCopy() {
       <button @click="emit('retry')" class="btn-secondary text-sm">重试</button>
     </div>
 
-    <!-- 摘要内容 — 左侧竖线的编辑排版风格 -->
-    <div v-else class="space-y-5">
+    <!-- 摘要内容 — Figma 五色模块 -->
+    <div v-else class="space-y-3">
       <div
         v-for="section in mergedSections"
         :key="section.key"
-        class="relative pl-5"
+        class="rounded-xl p-3"
+        :class="sectionColor(section.key).bg"
       >
-        <!-- 每个 section 左侧的竖线 -->
-        <span class="absolute left-0 top-0 bottom-0 w-0.5 rounded-full"
-              :class="section.key === 'findings' ? 'bg-amber' : 'bg-ink-200'">
-        </span>
-
-        <h4 class="text-xs font-medium text-ink-400 tracking-wide mb-1.5 uppercase font-mono">
+        <h4 class="text-xs font-medium mb-1.5" :class="sectionColor(section.key).text">
           {{ section.label }}
         </h4>
         <template v-if="section.key === 'findings'">
-          <ul class="space-y-1.5">
+          <ul class="space-y-1">
             <li
               v-for="(finding, fi) in (Array.isArray(section.content) ? section.content : [section.content])"
               :key="fi"
               class="text-sm text-ink-700 leading-relaxed flex items-start gap-2"
             >
-              <span class="text-amber mt-1.5 shrink-0">&mdash;</span>
+              <span class="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" :class="sectionColor(section.key).dot"></span>
               <span>{{ finding }}</span>
             </li>
           </ul>

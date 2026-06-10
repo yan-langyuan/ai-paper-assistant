@@ -62,6 +62,9 @@ onMounted(() => {
         <p class="text-ink-400 text-sm tracking-wide mb-4 font-mono uppercase">
           AI PAPER ASSISTANT
         </p>
+        <p class="text-ink-400 text-sm mb-2 font-medium">
+          {{ userStore.isLoggedIn ? '早安，' + userStore.username + '同学' : '早安，同学' }}
+        </p>
         <h1 class="font-display text-4xl sm:text-5xl text-ink-800 leading-tight text-balance">
           &#20889;&#35770;&#25991;&#30340;&#27599;&#19968;&#27493;&#65292;<br>
           <span class="text-amber">&#37117;&#26377;&#20154;&#38506;&#30528;&#20320;</span>
@@ -172,6 +175,24 @@ onMounted(() => {
             <span class="ml-4 text-ink-300 group-hover:text-amber group-hover:translate-x-1 transition-all shrink-0">
               &rarr;
             </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Stats（Figma 设计） -->
+      <section v-if="userStore.isLoggedIn">
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-white rounded-xl p-3 text-center border border-ink-100">
+            <div class="text-lg font-semibold" style="color:#2563EB">{{ literatureStore.list.length }}篇</div>
+            <div class="text-xs text-ink-400 mt-0.5">文献总数</div>
+          </div>
+          <div class="bg-white rounded-xl p-3 text-center border border-ink-100">
+            <div class="text-lg font-semibold" style="color:#16A34A">{{ literatureStore.list.filter(l => l.status === 'COMPLETED').length }}篇</div>
+            <div class="text-xs text-ink-400 mt-0.5">已有摘要</div>
+          </div>
+          <div class="bg-white rounded-xl p-3 text-center border border-ink-100">
+            <div class="text-lg font-semibold" style="color:#D97706">3次</div>
+            <div class="text-xs text-ink-400 mt-0.5">今日检测</div>
           </div>
         </div>
       </section>
